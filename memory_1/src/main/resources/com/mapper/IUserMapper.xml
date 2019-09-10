@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.IUserMapper">
+<!-- 登录功能 -->
+<select id="formalUserLogin" resultType="User" parameterType="User">
+	select id,name from t_user_formal where (email=#{email} or phone=#{phone}) and password=#{password};
+</select>
+
+<select id="unformalUserLogin" resultType="User" parameterType="User">
+	select id,name from t_user_unformal where id=#{id} and password=#{password};
+</select>
+<!-- 注册用户 -->
+<insert id="formalUserRegister" parameterType="User">
+	<selectKey keyProperty="id" keyColumn="id" order="AFTER" resultType="Integer">
+			select last_insert_id();
+	</selectKey>
+	insert into t_user_formal(name,birthday,address,phone,email,password,gender) 
+	 values(#{name},#{birthday},#{address},#{phone},#{email},#{password},#{gender});
+</insert>
+
+<insert id="unformalUserRegister" parameterType="User">
+	<selectKey keyProperty="id" keyColumn="id" order="AFTER" resultType="Integer">
+			select last_insert_id();
+	</selectKey>
+	insert into t_user_unformal(name,password) 
+	 values(#{name},#{password});
+</insert>
+
+<select id="judgeEmailNotRegister" parameterType="String" resultType="int">
+	select count(*) from t_user_formal where email=#{email};
+</select>
+
+<select id="judgePhoneNotRegister" parameterType="String" resultType="int">
+	select count(*) from t_user_formal where phone=#{phone};
+</select>
+<!-- 查询用户信息 -->
+<select id="formalUserFindOne" parameterType="Integer" resultType="User">
+	select name,phone,email,password,birthday,gender,address from t_user_formal 
+	 where id=#{id};
+</select>
+
+<select id="unformalUserFindOne" parameterType="Integer" resultType="User">
+	select name,password from t_user_unformal where id=#{id};
+</select>
+<!-- 修改正式用户的基础信息 -->
+<update id="formalUserUpdate" parameterType="User">
+	update t_user_formal set name=#{name},birthday=#{birthday},
+	address=#{address},gender=#{gender} 
+	 where id=#{id};
+</update>
+<!-- 删除游客账户 -->
+<delete id="unformalUserDelete" parameterType="Integer">
+	delete from t_user_unformal where id=#{id};
+</delete>
+<!-- 修改密码、修改邮箱、修改电话 -->
+<update id="formalUserChangePassword" parameterType="User">
+	update t_user_formal set password=#{password} where id=#{id};
+</update>
+
+<update id="unformalUserChangePassword" parameterType="User">
+	update t_user_unformal set password=#{password} where id=#{id};
+</update>
+
+<update id="formalUserChangeEmail" parameterType="User">
+	update t_user_formal set email=#{email} where id=#{id};
+</update>
+
+<update id="formalUserChangePhone" parameterType="User">
+	update t_user_formal set phone=#{phone} where id=#{id};
+</update>
+
+<!-- 找回密码，占未实现 -->
+</mapper>
